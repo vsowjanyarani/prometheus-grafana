@@ -1,28 +1,46 @@
 https://www.youtube.com/watch?v=dk2-_DbWb80   watch this video
 
+ THIS   DOCUMENT IS FOR INSTALLING PROMETHEUS AND GRAFANA IN KUBERNERTES CLUSTER USING HELM CHARTS - POD AND DEPLOYMENT AND SERVICES ARE GOT DEPLOYED BOTH FOR PROMETHEUS  ( NODE-EXPORTER,ALERT MANAGER ,PUSHGATEWAYS ETC RELATED TO PROMETHEUS) AND GRAFANA
 
 
 
+create a namespace monitoring
 Steps to Install Prometheus:
 --------------------------------
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts -n monitoring
 helm repo update
-helm install prometheus prometheus-community/prometheus
-kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext
-minikube service prometheus-server-ext
+helm install prometheus prometheus-community/prometheus -n monitoring
+kubectl get all -n monitoring
+kubectl get svc -n monitoring
+kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext -n monitoring
+kubectl get svc -n monitoring
+node port got created for promethus-server-ext service.. open that port in security group for worker node(using eks -cluster-node)
+workernodeiP:nodeport type in the browser,u can see prometheus
+  
+  To attach rules to prometheus:
+  ------------------------------
+       create myprometheus.yml file with content.
+       upgrade helm with this yml file.
+         helm upgrade pom prometheus-community/prometheus -f myprometheus.yml -n monitoring..
+         now check rules in prometheus browser.
 
 
 Steps to install Grafana:
 --------------------------
 
-helm repo add grafana https://grafana.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts -n monitoring
 helm repo update
-helm install grafana stable/grafana
-kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-ext
-minikube service grafana-ext
+helm install grafana grafana/grafana -n monitoring
+kubectl get all -n monitoring
+kubectl get svc -n monitoring
+kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-ext -n monitoring
+kubectl get svc -n monitoring
+node port got created for grafana-ext service.. open that port in security group for worker node(using eks -cluster-node)
+workernodeiP:nodeport type in the browser,u can see grafana.
+watch the above youtube link for creating dashboard by import code and for adding prometheus datasource to grafana
 
-To get user name and password in Grafana:
+To get user name and password in Grafana:( watch video)
 
 kubectl get secret --namespace default grafana -o yaml
 echo "RkpwY21aTFNXRDVJN3Z4RWFFUjlibkV1SDBDbnFBendadmc0bmROZQ==" | openssl base64 -d ; echo
