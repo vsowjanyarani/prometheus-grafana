@@ -20,7 +20,7 @@ workernodeiP:nodeport type in the browser,u can see prometheus
   
   To attach rules to prometheus:
   ------------------------------
-       create myprometheus.yml file with content.
+       create myprometheus.yml file with content.( not in monitoring namespace(outside))
        upgrade helm with this yml file.
          helm upgrade pom prometheus-community/prometheus -f myprometheus.yml -n monitoring..
          now check rules in prometheus browser.
